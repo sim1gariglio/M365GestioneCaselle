@@ -4,7 +4,7 @@
 . .\Funzioni-Exchange.ps1
 
 Write-Host "Inizializzazione modulo Exchange Online..." -ForegroundColor Cyan
-Connetti-ExchangeOnline
+Connect-Exchange
 
 $continuare = $true
 while ($continuare) {
@@ -90,22 +90,22 @@ while ($continuare) {
                 
                 $act = Read-Host "Seleziona azione"
                 switch ($act) {
-                    '1' { Mostra-InfoOggetto -oggetto $selezionato }
+                    '1' { Show-Info -oggetto $selezionato }
                     '2' { 
                         if ($selezionato.RecipientTypeDetails -like '*DistributionGroup*') {
                             Write-Host "`nMembri attivi:" -ForegroundColor Yellow
                             Get-DistributionGroupMember -Identity $selezionato.PrimarySmtpAddress | Select-Object Name, PrimarySmtpAddress | Format-Table -AutoSize
                         } else {
-                            Visualizza-PermessiCasella -fullTarget $selezionato.PrimarySmtpAddress
+                            Show-MailboxPermission -fullTarget $selezionato.PrimarySmtpAddress
                         }
                     }
                     '3' {
-                        if ($selezionato.RecipientTypeDetails -like '*DistributionGroup*') { Gestisci-MembriLista -nomeLista $selezionato.PrimarySmtpAddress -azione 'Aggiungi' }
-                        else { Gestisci-Permessi -fullTarget $selezionato.PrimarySmtpAddress -azione 'Aggiungi' -soloAccesso $soloAccessoPermessi }
+                        if ($selezionato.RecipientTypeDetails -like '*DistributionGroup*') { Set-MemberList -nomeLista $selezionato.PrimarySmtpAddress -azione 'Aggiungi' }
+                        else { Set-Permission -fullTarget $selezionato.PrimarySmtpAddress -azione 'Aggiungi' -soloAccesso $soloAccessoPermessi }
                     }
                     '4' {
-                        if ($selezionato.RecipientTypeDetails -like '*DistributionGroup*') { Gestisci-MembriLista -nomeLista $selezionato.PrimarySmtpAddress -azione 'Rimuovi' }
-                        else { Gestisci-Permessi -fullTarget $selezionato.PrimarySmtpAddress -azione 'Rimuovi' -soloAccesso $soloAccessoPermessi }
+                        if ($selezionato.RecipientTypeDetails -like '*DistributionGroup*') { Set-MemberList -nomeLista $selezionato.PrimarySmtpAddress -azione 'Rimuovi' }
+                        else { Set-Permission -fullTarget $selezionato.PrimarySmtpAddress -azione 'Rimuovi' -soloAccesso $soloAccessoPermessi }
                     }
                     '0' { $sub = $false }
                     default { Write-Host "Scelta errata" -ForegroundColor Red }

@@ -1,4 +1,4 @@
-function Connetti-ExchangeOnline {
+function Connect-Exchange {
     if (!(Get-Module -ListAvailable -Name ExchangeOnlineManagement)) { 
         Install-Module -Name ExchangeOnlineManagement -Scope CurrentUser -Force 
     }
@@ -7,7 +7,7 @@ function Connetti-ExchangeOnline {
     }
 }
 
-function Mostra-InfoOggetto {
+function Show-Info {
     param ($oggetto)
     
     # Informazioni di base
@@ -53,7 +53,7 @@ function Mostra-InfoOggetto {
     Write-Host "Nascondi da GAL: $($oggetto.HiddenFromAddressListsEnabled)"
 }
 
-function Visualizza-PermessiCasella {
+function Show-MailboxPermission {
     param ([string]$fullTarget)
     Write-Host "`n--- PERMESSI ATTIVI PER: $fullTarget ---" -ForegroundColor Cyan
     
@@ -68,7 +68,7 @@ function Visualizza-PermessiCasella {
     else { Write-Host "  Nessun utente ha il permesso di invio." -ForegroundColor DarkGray }
 }
 
-function Seleziona-Utente {
+function Select-User {
     $c = Read-Host "Inserisci il cognome o parte del nome dell'utente"
     $u = Get-Recipient -Filter "DisplayName -like '*$c*'" -RecipientTypeDetails UserMailbox -ResultSize 50 | Sort-Object PrimarySmtpAddress
     if (-not $u) { Write-Host "Utente non trovato." -ForegroundColor Red; return $null }
@@ -84,9 +84,9 @@ function Seleziona-Utente {
     return $u[0]
 }
 
-function Gestisci-Permessi {
+function Set-Permission {
     param ([string]$fullTarget, [string]$azione, [bool]$soloAccesso)
-    $utente = Seleziona-Utente
+    $utente = Select-User
     if (-not $utente) { return }
     
     $fullUser = $utente.PrimarySmtpAddress
@@ -101,9 +101,9 @@ function Gestisci-Permessi {
     }
 }
 
-function Gestisci-MembriLista {
+function Set-MemberList {
     param ([string]$nomeLista, [string]$azione)
-    $utente = Seleziona-Utente
+    $utente = Select-User
     if (-not $utente) { return }
     
     if ($azione -eq 'Aggiungi') {

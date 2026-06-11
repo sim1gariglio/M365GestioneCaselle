@@ -11,11 +11,11 @@ Lo script è suddiviso in più file `.ps1` situati nella medesima cartella di la
 * **`Menu-Principale.ps1`**: Il punto di ingresso dell'applicazione. Inizializza la codifica UTF-8, carica i moduli, gestisce il ciclo principale del menu e smista le chiamate alle funzioni specifiche per tipologia di oggetto o script esterni.
 * **`Funzioni-Exchange.ps1`**: Contiene il motore logico dello strumento:
   * Connessione interattiva a Exchange Online (`Connect-ExchangeOnline`).
-  * Visualizzazione delle informazioni dettagliate dell'oggetto (`Mostra-InfoOggetto`), inclusi i MB effettivi occupati, il numero di elementi e la data/ora dell'ultimo accesso (`LastLogonTime`) calcolati in modo robusto.
-  * Lettura e visualizzazione dei permessi/deleghe attive (`Visualizza-PermessiCasella`).
-  * Selezione guidata degli utenti tramite filtro sul DisplayName (`Seleziona-Utente`).
-  * Gestione puntuale dei permessi FullAccess e SendAs (`Gestisci-Permessi`).
-  * Gestione membership per le distribution list (`Gestisci-MembriLista`).
+  * Visualizzazione delle informazioni dettagliate dell'oggetto (`Show-Info`), inclusi i MB effettivi occupati, il numero di elementi e la data/ora dell'ultimo accesso (`LastLogonTime`) calcolati in modo robusto.
+  * Lettura e visualizzazione dei permessi/deleghe attive (`Show-MailboxPermission`).
+  * Selezione guidata degli utenti tramite filtro sul DisplayName (`Select-User`).
+  * Gestione puntuale dei permessi FullAccess e SendAs (`Set-Permission`).
+  * Gestione membership per le distribution list (`Set-MemberList`).
 * **`Configura-CA.ps1`**: Script richiamato esternamente dal menu principale per l'applicazione e la rimozione massiva/puntuale dei permessi di invio (`SendAs`) riferiti alla casella Compliance/Auditing (`ca@asl5.liguria.it`), utilizzata da un applicativo configurato su Azure.
 * **`Ricerca-Avanzata.ps1`** *(Opzionale)*: Modulo di ricerca per similarità (`DisplayName -like`). Se presente nella cartella, viene caricato dinamicamente al posto della ricerca per indirizzo esatto.
 
