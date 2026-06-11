@@ -8,17 +8,49 @@ function Connetti-ExchangeOnline {
 }
 
 function Mostra-InfoOggetto {
-    param ([object]$oggetto)
-    Write-Host "`n--- INFORMAZIONI OGGETTO ---" -ForegroundColor Cyan
-    Write-Host "Nome (DisplayName): $($oggetto.DisplayName)" -ForegroundColor White
-    Write-Host "Indirizzo Principale: $($oggetto.PrimarySmtpAddress)" -ForegroundColor White
-    Write-Host "Alias: $($oggetto.Alias)" -ForegroundColor White
-    Write-Host "Tipo: $($oggetto.RecipientTypeDetails)" -ForegroundColor White
-    if ($oggetto.RecipientTypeDetails -eq 'SharedMailbox' -or $oggetto.RecipientTypeDetails -eq 'UserMailbox') {
-        $mb = Get-Mailbox -Identity $oggetto.PrimarySmtpAddress
-        Write-Host "Dimensione (MB): $([math]::round($mb.TotalItemSize.Value.RawValue / 1MB, 2))" -ForegroundColor Gray
-        Write-Host "Nascondi da GAL: $($mb.HiddenFromAddressListsEnabled)" -ForegroundColor Gray
+    param ($oggetto)
+    
+    # Informazioni di base
+    Write-Host "Nome (DisplayName): $($oggetto.DisplayName)"
+    Write-Host "Indirizzo Principale: $($oggetto.PrimarySmtpAddress)"
+    Write-Host "Alias: $($oggetto.Alias)"
+    Write-Host "Tipo: $($oggetto.RecipientTypeDetails)"
+    
+    $statistiche = Get-EXOMailboxStatistics -Identity $oggetto.PrimarySmtpAddress -Properties TotalItemSize, LastLogonTime -ErrorAction SilentlyContinue
+
+    if ($statistiche -and $statistiche.TotalItemSize.Value) {
+        # Converte l'oggetto in stringa 
+        $stringaValore = $statistiche.TotalItemSize.Value.ToString()
+        
+        # Estrae la parte numerica dei byte
+        if ($stringaValore -match '\(([\d,\.]+)\sbytes\)') {
+            $byteTotali = [long]($matches[1] -replace ',', '')
+            $dimensioneMB = [math]::round($byteTotali / (1024 * 1024), 2)
+        } else {
+            $dimensioneMB = 0.0
+        }
+        
+        $elementi = $statistiche.ItemCount
+        
+        # Recupera la data e l'ora dell'ultimo accesso
+        $ultimoAccesso = $statistiche.LastLogonTime
+
+        Write-Host "Dimensione (MB): $dimensioneMB"
+        Write-Host "Numero elementi: $elementi"
+        
+        if ($ultimoAccesso) {
+            Write-Host "Ultimo accesso: $ultimoAccesso" -ForegroundColor Cyan
+        } else {
+            Write-Host "Ultimo accesso: Mai / Dato non disponibile" -ForegroundColor Yellow
+        }
+
+    } else {
+        Write-Host "Dimensione (MB): N/D"
+        Write-Host "Numero elementi: N/D"
+        Write-Host "Ultimo accesso: N/D"
     }
+    
+    Write-Host "Nascondi da GAL: $($oggetto.HiddenFromAddressListsEnabled)"
 }
 
 function Visualizza-PermessiCasella {
